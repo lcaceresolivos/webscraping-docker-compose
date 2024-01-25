@@ -1,0 +1,145 @@
+version: '3'
+services:
+  python:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_USER=AQUI TU USUARIO POSTGRES
+      - DB_PASSWORD=AQUI TU PASSWORD POSTGRES
+      - DB_SCHEMA=AQUI TU BD POSTGRES
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_TYPE=postgresql
+      - DB_CONNECTOR=psycopg2
+      - DB_DEBUG=debug
+      - DB_POOL_DEBUG=debug
+      - FACEBOOK_USER_NAME=AQUI TU USERNAME FACEBOOK
+      - FACEBOOK_PASSWORD=AQUI TU PASSWORD FACEBOOK
+      - PROXY_API_KEY=AQUI API KEY SERVICIO SCRAPEOPS(OPCIONAL)
+      - SELENIUM_DRIVER_URL=http://selenium-hub:4444/wd/hub
+      - TZ=America/Santiago
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./src:/scraping
+      - ./config:/entrypoint.sh
+    stdin_open: true
+    tty: true
+    depends_on:
+      - postgres
+      - pgadmin4
+
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    ports:
+      - "6000:5432"
+    environment:
+      - POSTGRES_USER=AQUI TU USUARIO
+      - POSTGRES_PASSWORD=AQUI TU PASSWORD
+      - POSTGRES_DB=AQUI TU BD
+      - TZ=America/Santiago
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./config:/docker-entrypoint-initdb.d
+    restart: always
+
+  pgadmin4:
+    container_name: pgadmin4
+    image: dpage/pgadmin4
+    ports:
+     - "80:80"
+    environment:
+     - PGADMIN_DEFAULT_EMAIL=AQUI TU EMAIL
+     - PGADMIN_DEFAULT_PASSWORD=AQUI TU PASSWORD
+
+  chrome1:
+    image: selenium/node-chrome:latest
+    shm_size: 2gb
+    container_name: chrome1
+    depends_on:
+      - selenium-hub
+    environment:
+      - SELENIUM_DRIVER_URL=http://selenium-hub:4444/wd/hub
+      - SE_NODE_MAX_SESSIONS=1
+      - SE_NODE_SESSION_TIMEOUT=60
+      - SE_VNC_NO_PASSWORD=1
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    restart: always
+   
+  chrome2:
+    image: selenium/node-chrome:latest
+    shm_size: 2gb
+    container_name: chrome2
+    depends_on:
+      - selenium-hub
+    environment:
+      - SELENIUM_DRIVER_URL=http://selenium-hub:4444/wd/hub
+      - SE_NODE_MAX_SESSIONS=1
+      - SE_NODE_SESSION_TIMEOUT=60
+      - SE_VNC_NO_PASSWORD=1
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    restart: always
+
+  chrome3:
+    image: selenium/node-chrome:latest
+    shm_size: 2gb
+    container_name: chrome3
+    depends_on:
+      - selenium-hub
+    environment:
+      - SELENIUM_DRIVER_URL=http://selenium-hub:4444/wd/hub
+      - SE_NODE_MAX_SESSIONS=1
+      - SE_NODE_SESSION_TIMEOUT=60
+      - SE_VNC_NO_PASSWORD=1
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    restart: always
+   
+  chrome4:
+    image: selenium/node-chrome:latest
+    shm_size: 2gb
+    container_name: chrome4
+    depends_on:
+      - selenium-hub
+    environment:
+      - SELENIUM_DRIVER_URL=http://selenium-hub:4444/wd/hub
+      - SE_NODE_MAX_SESSIONS=1
+      - SE_NODE_SESSION_TIMEOUT=60
+      - SE_VNC_NO_PASSWORD=1
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    restart: always
+    
+  chrome5:
+    image: selenium/node-chrome:latest
+    shm_size: 2gb
+    container_name: chrome5
+    depends_on:
+      - selenium-hub
+    environment:
+      - SELENIUM_DRIVER_URL=http://selenium-hub:4444/wd/hub
+      - SE_NODE_MAX_SESSIONS=1
+      - SE_NODE_SESSION_TIMEOUT=60
+      - SE_VNC_NO_PASSWORD=1
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    restart: always
+
+  selenium-hub:
+    image: selenium/hub:latest
+    container_name: selenium-hub
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    restart: always
